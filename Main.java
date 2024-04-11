@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
 
@@ -14,7 +15,7 @@ public class Main {
         String fileName = myScanner.nextLine();
 
         storage.loadGraphFromFile("data/" + fileName); // Use the full path provided by the user
-        HashMap<Integer, List<Integer>> loadedGraph = storage.getGraph();
+        HashMap<Integer, Set<Integer>> loadedGraph = storage.getGraph();
 
         System.out.println("Graph Loaded!");
 
@@ -26,7 +27,6 @@ public class Main {
             System.out.print("\nEnter Your Choice: ");
 
             int mainChoice = myScanner.nextInt();
-            System.out.println(mainChoice);
 
             switch (mainChoice) {
                 case 1:
@@ -37,7 +37,7 @@ public class Main {
                         int id = myScanner.nextInt();
                         myScanner.nextLine(); // Consume newline left-over
                         if (loadedGraph.containsKey(id)) {
-                            List<Integer> friends = loadedGraph.get(id);
+                            Set<Integer> friends = loadedGraph.get(id);
                             System.out.println("Person " + id + " has " + friends.size() + " friends!");
                             System.out.println("List of friends: " + friends + "\n");
                             validId = true; // Set flag to true as we have found a valid ID
@@ -50,9 +50,58 @@ public class Main {
                     }
                 }
                 break;
-                case 4:
-                    System.out.println("2");
+                case 2:
+                boolean validConnectionFound = false;
+                while (!validConnectionFound) {
+                    System.out.print("Enter ID of first person (or 'exit' to go back): ");
+                    String firstPersonInput = myScanner.nextLine();
+                    
+                    // Allow user to exit to main menu
+                    if ("exit".equalsIgnoreCase(firstPersonInput.trim())) {
+                        break;
+                    }
+            
+                    System.out.print("Enter ID of second person (or 'exit' to go back): ");
+                    String secondPersonInput = myScanner.nextLine();
+            
+                    // Allow user to exit to main menu
+                    if ("exit".equalsIgnoreCase(secondPersonInput.trim())) {
+                        break;
+                    }
+            
+                    int personOneId;
+                    int personTwoId;
+                    try {
+                        personOneId = Integer.parseInt(firstPersonInput.trim());
+                        personTwoId = Integer.parseInt(secondPersonInput.trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter numeric IDs.");
+                        continue;
+                    }
+                    
+                    if (!loadedGraph.containsKey(personOneId) || !loadedGraph.containsKey(personTwoId)) {
+                        System.out.println("One or both IDs are not in the graph. Please try again.");
+                        continue;
+                    }
+            
+                    List<Integer> connectionPath = GraphAlgorithms.bfs(loadedGraph, personOneId, personTwoId);
+                    
+                    if (connectionPath != null && !connectionPath.isEmpty()) {
+                        validConnectionFound = true; // A valid connection was found
+                        System.out.println("There is a connection from " + personOneId + " to " + personTwoId + "!");
+                        System.out.print("Path: ");
+                        for (int i = 0; i < connectionPath.size(); i++) {
+                            if (i > 0) System.out.print(" -> ");
+                            System.out.print(connectionPath.get(i));
+                        }
+                        System.out.println("\n"); // Print a newline at the end
+                    } else {
+                        System.out.println("Cannot find a connection between " + personOneId + " and " + personTwoId + ". Please try again.");
+                    }
+                }
                 break;
+            
+            
 
                 case 3:
                     System.out.println("Exiting...");
