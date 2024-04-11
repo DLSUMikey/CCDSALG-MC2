@@ -53,53 +53,42 @@ public class Main {
                 case 2:
                 boolean validConnectionFound = false;
                 while (!validConnectionFound) {
-                    System.out.print("Enter ID of first person (or 'exit' to go back): ");
-                    String firstPersonInput = myScanner.nextLine();
-                    
-                    // Allow user to exit to main menu
-                    if ("exit".equalsIgnoreCase(firstPersonInput.trim())) {
-                        break;
+                    System.out.print("Enter ID of first person: ");
+                    int personOneId = -1;
+                    while (!myScanner.hasNextInt()) {
+                        System.out.println("Invalid input. Please enter a number for the first person.");
+                        myScanner.next(); // Consume the invalid input
                     }
+                    personOneId = myScanner.nextInt();
+                    myScanner.nextLine(); // Consume the newline character
             
-                    System.out.print("Enter ID of second person (or 'exit' to go back): ");
-                    String secondPersonInput = myScanner.nextLine();
-            
-                    // Allow user to exit to main menu
-                    if ("exit".equalsIgnoreCase(secondPersonInput.trim())) {
-                        break;
+                    System.out.print("Enter ID of second person: ");
+                    int personTwoId = -1;
+                    while (!myScanner.hasNextInt()) {
+                        System.out.println("Invalid input. Please enter a number for the second person.");
+                        myScanner.next(); // Consume the invalid input
                     }
+                    personTwoId = myScanner.nextInt();
+                    myScanner.nextLine(); // Consume the newline character
             
-                    int personOneId;
-                    int personTwoId;
-                    try {
-                        personOneId = Integer.parseInt(firstPersonInput.trim());
-                        personTwoId = Integer.parseInt(secondPersonInput.trim());
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input. Please enter numeric IDs.");
-                        continue;
-                    }
-                    
                     if (!loadedGraph.containsKey(personOneId) || !loadedGraph.containsKey(personTwoId)) {
                         System.out.println("One or both IDs are not in the graph. Please try again.");
-                        continue;
-                    }
-            
-                    List<Integer> connectionPath = GraphAlgorithms.bfs(loadedGraph, personOneId, personTwoId);
-                    
-                    if (connectionPath != null && !connectionPath.isEmpty()) {
-                        validConnectionFound = true; // A valid connection was found
-                        System.out.println("There is a connection from " + personOneId + " to " + personTwoId + "!");
-                        System.out.print("Path: ");
-                        for (int i = 0; i < connectionPath.size(); i++) {
-                            if (i > 0) System.out.print(" -> ");
-                            System.out.print(connectionPath.get(i));
-                        }
-                        System.out.println("\n"); // Print a newline at the end
                     } else {
-                        System.out.println("Cannot find a connection between " + personOneId + " and " + personTwoId + ". Please try again.");
+                        List<Integer> connectionPath = GraphAlgorithms.bfs(loadedGraph, personOneId, personTwoId);
+                        if (connectionPath != null && !connectionPath.isEmpty()) {
+                            validConnectionFound = true; // A valid connection was found
+                            System.out.println("There is a connection from " + personOneId + " to " + personTwoId + "!");
+                            for (int i = 0; i < connectionPath.size() - 1; i++) {
+                                System.out.println(connectionPath.get(i) + " is friends with " + connectionPath.get(i + 1));
+                            }
+                            System.out.println("");
+                        } else {
+                            System.out.println("Cannot find a connection between " + personOneId + " and " + personTwoId + ". Please try again.");
+                        }
                     }
                 }
                 break;
+            
             
             
 
